@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class TabBarViewController: UITabBarController {
     
@@ -23,13 +24,39 @@ class TabBarViewController: UITabBarController {
     }()
     
     
+    // MARK: - API
+    
+    func authenticateUser() {
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let nav = UINavigationController(rootViewController: LoginController())
+                nav.modalPresentationStyle = .fullScreen;
+                self.present(nav, animated: true, completion: nil)
+            }
+            print("DEBUG: not logged in")
+        } else {
+            print ("DEBUG: logged in")
+            configureViewContollers()
+            configureUI()
+        }
+    }
+    
+    func signout() {
+        do {
+            try Auth.auth().signOut()
+        } catch let error {
+            print("debug: faield to signout with error \(error.localizedDescription)")
+            
+        }
+    }
+    
     // LIFECYCLE
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureViewContollers()
-        configureUI()
+        authenticateUser()
+       
     }
     
     // HELPERS

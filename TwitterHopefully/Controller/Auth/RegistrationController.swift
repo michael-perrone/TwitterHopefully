@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import Firebase
 
 class RegistrationController: UIViewController {
     
     private let imagePicker = UIImagePickerController();
+    private var profileImage: UIImage?
     
     let addPhotoButton: UIButton = {
         let addPhotoB = UIButton(type: .system);
@@ -31,7 +33,6 @@ class RegistrationController: UIViewController {
         registerB.setTitleColor(.systemPink, for: .normal)
         registerB.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
         registerB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-       
         return registerB;
     }()
     
@@ -100,7 +101,20 @@ class RegistrationController: UIViewController {
     }
     
     @objc func handleRegister() {
-        print("registering")
+        print("hello")
+        if passwordTextField.text == passwordConfirmText.text {
+        guard let profImage = profileImage else {return}
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        guard let fullName = nameTextField.text else {return}
+            
+      let credentials = AuthCredentials(email: email, password: password, fullName: fullName, profImage: profImage)
+            
+            AuthService.shared.registerUser(credentials: credentials) { (error, ref) in
+                print("DEBUG: Signup Successful")
+                print("DEBUG: Update user Interface")
+            }
+        }
     }
     
     @objc func handleAddPhoto() {
@@ -136,6 +150,7 @@ class RegistrationController: UIViewController {
 extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let profileImage = info[.editedImage] as? UIImage else {return}
+        self.profileImage = profileImage;
         addPhotoButton.layer.cornerRadius = 70;
         addPhotoButton.layer.masksToBounds = true;
         addPhotoButton.imageView?.contentMode = .scaleAspectFill;
