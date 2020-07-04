@@ -11,6 +11,14 @@ import Firebase
 
 class TabBarViewController: UITabBarController {
     
+    var user: User? {
+        didSet {
+            guard let nav = viewControllers?[0] as? UINavigationController else {return}
+            guard let feed = nav.viewControllers[0] as? FeedController else {return}
+            feed.user = user;
+        }
+    }
+    
     // PROPS
     
     let actionButton: UIButton = {
@@ -19,12 +27,18 @@ class TabBarViewController: UITabBarController {
         button.backgroundColor = UIColor(red: 0, green: 0.5, blue: 1, alpha: 0.5)
         button.setImage(UIImage(named: "new_tweet"), for: .normal)
         button.layer.cornerRadius = 56 / 2;
-        button.addTarget(self, action: #selector(willCreateThis), for: .touchUpInside)
+        button.addTarget(self, action: #selector(tweetButtonTapped), for: .touchUpInside)
         return button
     }()
     
     
     // MARK: - API
+    
+    func fetchUser() {
+        UserService.shared.fetchUser { (user) in
+            self.user = user;
+        }
+    }
     
     func authenticateUser() {
         if Auth.auth().currentUser == nil {
@@ -38,16 +52,16 @@ class TabBarViewController: UITabBarController {
             print ("DEBUG: logged in")
             configureViewContollers()
             configureUI()
+            fetchUser()
         }
     }
     
-    func signout() {
-        do {
-            try Auth.auth().signOut()
-        } catch let error {
-            print("debug: faield to signout with error \(error.localizedDescription)")
-            
-        }
+  @objc func tweetButtonTapped() {
+        let tweetController = UploadTweetController();
+        tweetController.user = user;
+        let nav = UINavigationController(rootViewController: tweetController)
+        nav.modalPresentationStyle = .fullScreen;
+        present(nav, animated: true, completion: nil);
     }
     
     // LIFECYCLE
@@ -80,7 +94,7 @@ class TabBarViewController: UITabBarController {
     
     func configureViewContollers() {
         viewControllers = [
-            templateNavController(image: UIImage(named: "home_unselected"), rootViewController: FeedController()),
+            templateNavController(image: UIImage(named: "home_unselected"), rootViewController: FeedController(collectionViewLayout: UICollectionViewFlowLayout())),
             templateNavController(image: UIImage(named: "search_unselected"), rootViewController: ExploreController()),
             templateNavController(image: UIImage(named: "like_unselected"), rootViewController: NotificationsController()),
             templateNavController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsController())
@@ -93,6 +107,4 @@ class TabBarViewController: UITabBarController {
         navItem.navigationBar.barTintColor = .white;
         return navItem;
     }
-
-
 }

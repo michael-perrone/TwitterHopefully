@@ -1,45 +1,46 @@
-//
-//  AuthService.swift
-//  TwitterHopefully
-//
-//  Created by Michael Perrone on 4/1/20.
-//  Copyright © 2020 Michael Perrone. All rights reserved.
-//
 
+
+import Foundation
 import UIKit
 import Firebase
 
 struct AuthCredentials {
-    let email: String
-    let password: String
-    let fullName: String
-    let profImage: UIImage
+    let email: String;
+    let password: String;
+    let fullName: String;
+    let profileImage: UIImage;
 }
-
 
 struct AuthService {
     static let shared = AuthService()
+    
+    
+    func login(email: String, password: String, completion: AuthDataResultCallback?) {
+        Auth.auth().signIn(withEmail: email, password: password, completion: completion)
+    }
+    
     func registerUser(credentials: AuthCredentials, completion: @escaping(Error?, DatabaseReference) -> Void) {
-        guard let imageData = credentials.profImage.jpegData(compressionQuality: 0.3) else {return}
-              
-              let fileName = NSUUID().uuidString;
-              let storageRef = STORE_PROFILE_IMAGES.child(fileName);
-              
-              storageRef.putData(imageData, metadata: nil) { (meta, error) in
-                  storageRef.downloadURL { (url, error) in
-                      guard let profileImageUrl = url?.absoluteString else {return}
-                      print("am i here")
-                    Auth.auth().createUser(withEmail: credentials.email, password: credentials.password) { (result, error) in
-                          if let error = error {
-                              print("The error is \(error)")
-                              return
-                          }
-                          guard let uid = result?.user.uid else {return}
-                          let values = ["email": credentials.email, "fullName": credentials.fullName, "profileImageUrl": profileImageUrl]
-                        REF_USERS.child(uid).updateChildValues(values, withCompletionBlock: completion)
-                      }
-                      
-                  }
+        
+        guard let imageData = credentials.profileImage.jpegData(compressionQuality: 0.2) else {return}
+        
+        let fileName = NSUUID().uuidString;
+        let storageRef = STORAGE_PROFILE_IMAGES.child(fileName);
+        storageRef.putData(imageData, metadata: nil) { (meta, error) in
+            storageRef.downloadURL { (url, error) in
+                guard let profileImageURL = url?.absoluteString else { return }
+                
+                Auth.auth().createUser(withEmail: credentials.email, password: credentials.password) { (result, error) in
+                    if let error = error {
+                        print("Debug: Error: \(error)")
+                    }
+                    
+                    guard let uid = result?.user.uid else {return}
+                    
+                    let values = ["email": credentials.email, "fullName": credentials.fullName, "profileImageURL": profileImageURL]
+                    
+                    DB_REF.child("users").child(uid).updateChildValues(values, withCompletionBlock: completion)
+                }
+            }
         }
     }
 }

@@ -18,7 +18,8 @@ class ExploreController : UIViewController {
 
 override func viewDidLoad() {
     super.viewDidLoad()
-    navigationItem.title = "Explore";
+    navigationController?.navigationBar.isHidden = true;
+    view.backgroundColor = .yellow;
   }
     
     

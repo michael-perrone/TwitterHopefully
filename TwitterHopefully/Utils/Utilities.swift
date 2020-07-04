@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class Utilities {
     func inputContainerView(withImage image: UIImage, text: UITextField) -> UIView {
@@ -29,6 +30,25 @@ class Utilities {
         return uiView;
     }
     
+    func defaultUserImage(height: CGFloat, width: CGFloat) -> UIImageView {
+        let defaultImageView = UIImageView();
+        defaultImageView.image = #imageLiteral(resourceName: "twitter_logo_blue");
+        defaultImageView.setWidth(width: width);
+        defaultImageView.setHeight(height: height);
+        return defaultImageView;
+    }
+    
+    func createProfileImage(user: User, height: CGFloat, width: CGFloat) -> UIImageView {
+        let profileImageView = UIImageView();
+        profileImageView.setHeight(height: height);
+        profileImageView.setWidth(width: width);
+        profileImageView.layer.cornerRadius = width / 2;
+        profileImageView.layer.masksToBounds = true;
+        guard let url = URL(string: user.profileImageURL) else {return defaultUserImage(height: 32, width: 32)}
+        profileImageView.sd_setImage(with: url, completed: nil);
+        return profileImageView;
+    }
+    
     func attributedButton(_ firstPart: String, _ secondPart: String) -> UIButton {
         let button = UIButton(type: .system)
         let attributedTitle = NSMutableAttributedString(string: firstPart, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.white])
@@ -36,4 +56,6 @@ class Utilities {
         button.setAttributedTitle(attributedTitle, for: .normal)
         return button;
     }
+    
+    
 }

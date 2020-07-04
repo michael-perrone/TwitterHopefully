@@ -43,19 +43,41 @@ extension UIView {
         }
     }
     
-    func anchorLeft(left: NSLayoutXAxisAnchor, paddingLeft: CGFloat) {
-        leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true;
+     func padLeft(from: NSLayoutXAxisAnchor, num: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        leftAnchor.constraint(equalTo: from, constant: num).isActive = true;
     }
     
-    func anchorTop(top: NSLayoutYAxisAnchor, paddingTop: CGFloat) {
-        topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true;
+    func padTop(from: NSLayoutYAxisAnchor, num: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        topAnchor.constraint(equalTo: from, constant: num).isActive = true;
     }
-    func anchorRight(right: NSLayoutXAxisAnchor, paddingRight: CGFloat) {
-        rightAnchor.constraint(equalTo: right, constant: paddingRight).isActive = true;
+    
+    func padBottom(from: NSLayoutYAxisAnchor, num: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        bottomAnchor.constraint(equalTo: from, constant: -num).isActive = true;
     }
-    func anchorBottom(bottom: NSLayoutYAxisAnchor, paddingBottom: CGFloat) {
-        bottomAnchor.constraint(equalTo: bottom, constant: paddingBottom).isActive = true;
+    
+    func padRight(from: NSLayoutXAxisAnchor, num: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        rightAnchor.constraint(equalTo: from, constant: -num).isActive = true;
     }
+    
+    func setHeight(height: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        heightAnchor.constraint(equalToConstant: height).isActive = true;
+    }
+    
+    func setWidth(width: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        widthAnchor.constraint(equalToConstant: width).isActive = true;
+    }
+    
+    func centerTo(element: NSLayoutXAxisAnchor) {
+        translatesAutoresizingMaskIntoConstraints = false;
+        centerXAnchor.constraint(equalTo: element).isActive = true;
+    }
+
     
 }
 
@@ -84,5 +106,7 @@ extension UIImage {
 extension UIColor {
     static func rgb(red: CGFloat, green: CGFloat, blue: CGFloat) -> UIColor {
         return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1);
-    }
+          }
+        static let mainBlue = UIColor.rgb(red: 29, green: 161, blue: 242);
+  
 }

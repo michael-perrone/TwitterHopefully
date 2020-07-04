@@ -19,8 +19,6 @@ class RegistrationController: UIViewController {
         addPhotoB.setImage(UIImage(named: "plus_photo"), for: .normal);
         addPhotoB.tintColor = .white;
         addPhotoB.addTarget(self, action: #selector(handleAddPhoto), for: .touchUpInside)
-        addPhotoB.heightAnchor.constraint(equalToConstant: 140).isActive = true;
-        addPhotoB.widthAnchor.constraint(equalToConstant: 60).isActive = true;
         return addPhotoB;
     }()
 
@@ -101,19 +99,24 @@ class RegistrationController: UIViewController {
     }
     
     @objc func handleRegister() {
-        print("hello")
-        if passwordTextField.text == passwordConfirmText.text {
-        guard let profImage = profileImage else {return}
-        guard let email = emailTextField.text else { return }
-        guard let password = passwordTextField.text else { return }
-        guard let fullName = nameTextField.text else {return}
+        guard let profileImage = profileImage else {
+            print("no image")
+            return};
+        guard let email = emailTextField.text else {return};
+        guard let password = passwordTextField.text else {return};
+        guard let fullName = nameTextField.text else {return};
+        
+        
+        let credentials = AuthCredentials(email: email, password: password, fullName: fullName, profileImage: profileImage)
+        
+        AuthService.shared.registerUser(credentials: credentials) { (error, ref) in
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
             
-      let credentials = AuthCredentials(email: email, password: password, fullName: fullName, profImage: profImage)
+            guard let tab = window.rootViewController as? TabBarViewController else {return}
             
-            AuthService.shared.registerUser(credentials: credentials) { (error, ref) in
-                print("DEBUG: Signup Successful")
-                print("DEBUG: Update user Interface")
-            }
+            tab.authenticateUser()
+            
+            self.dismiss(animated: true, completion: nil);
         }
     }
     
@@ -124,7 +127,6 @@ class RegistrationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configUI()
-    
     }
     
     func configUI() {
@@ -132,7 +134,10 @@ class RegistrationController: UIViewController {
         imagePicker.delegate = self;
         imagePicker.allowsEditing = true;
         view.addSubview(addPhotoButton);
-        addPhotoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 5, paddingLeft: 30, paddingRight: 30, width: 20)
+        addPhotoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 10);
+        addPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true;
+        addPhotoButton.heightAnchor.constraint(equalToConstant: 100).isActive = true;
+        addPhotoButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
         view.addSubview(backToLoginButton)
         backToLoginButton.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, paddingLeft: 40, paddingBottom: 10, paddingRight: 40)
         
@@ -151,11 +156,12 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let profileImage = info[.editedImage] as? UIImage else {return}
         self.profileImage = profileImage;
-        addPhotoButton.layer.cornerRadius = 70;
+        addPhotoButton.layer.cornerRadius = 50;
         addPhotoButton.layer.masksToBounds = true;
         addPhotoButton.imageView?.contentMode = .scaleAspectFill;
         addPhotoButton.imageView?.clipsToBounds = true;
         addPhotoButton.layer.borderColor = UIColor.white.cgColor;
+        addPhotoButton.layer.borderWidth = 2.0;
         self.addPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
         dismiss(animated: true, completion: nil)
     }

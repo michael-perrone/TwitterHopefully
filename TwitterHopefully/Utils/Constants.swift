@@ -11,6 +11,9 @@ import Firebase
 
 let DB_REF = Database.database().reference();
 let REF_USERS = DB_REF.child("users");
+let REF_TWEETS = DB_REF.child("tweets");
 
-let STORE_REF = Storage.storage().reference();
-let STORE_PROFILE_IMAGES = Storage.storage().reference().child("profile_images");
+let STORAGE_REF = Storage.storage().reference();
+let STORAGE_PROFILE_IMAGES = Storage.storage().reference().child("profile_images");
+
+let USER_ID = Auth.auth().currentUser?.uid;

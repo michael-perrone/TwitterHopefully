@@ -67,7 +67,23 @@ class LoginController: UIViewController {
     }
     
     @objc func handleLogin() {
-        print("hello")
+        guard let email = emailTextfield.text else {return}
+        guard let password = passwordTextField.text else {return}
+        
+        AuthService.shared.login(email: email, password: password) { (result, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+            
+            guard let tab = window.rootViewController as? TabBarViewController else {return}
+            
+            tab.authenticateUser()
+            
+            self.dismiss(animated: true, completion: nil);
+        }
     }
     /////////////////////
     /////////////////////
