@@ -26,6 +26,8 @@ struct Schedule {
     let satClose: String;
     
     init(dic: [[String:String]]) {
+        print(dic[4]["open"])
+        print("AHHHHHHHHH")
         sunOpen = dic[0]["open"]!;
         sunClose = dic[0]["close"]!;
         monOpen = dic[1]["open"]!;
@@ -40,6 +42,7 @@ struct Schedule {
         friClose = dic[5]["close"]!;
         satOpen = dic[6]["open"]!;
         satClose = dic[6]["close"]!;
+        print(thuOpen)
 
     }
 }
